@@ -164,7 +164,7 @@ class APIGatewayResponse(BaseResponse):
 
         if self.method == 'GET':
             deployments = self.backend.get_deployments(function_id)
-            return 200, headers, json.dumps({"items": deployments})
+            return 200, headers, json.dumps({"item": deployments})
             # return 200, headers, json.dumps({"items": [
             #     deployment.to_dict() for deployment in deployments
             # ]})

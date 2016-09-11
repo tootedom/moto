@@ -11,6 +11,15 @@ class APIGatewayResponse(BaseResponse):
     def _get_param(self, key):
         return json.loads(self.body.decode("ascii")).get(key)
 
+
+    def _get_param(self, key, default):
+        jsonbody = json.loads(self.body.decode("ascii"))
+
+        if key in jsonbody:
+            return jsonbody.get(key)
+        else:
+            return default
+
     @property
     def backend(self):
         return apigateway_backends[self.region]
@@ -155,10 +164,11 @@ class APIGatewayResponse(BaseResponse):
 
         if self.method == 'GET':
             deployments = self.backend.get_deployments(function_id)
-            return 200, headers, json.dumps({"item": deployments})
+            return 200, headers, json.dumps({"items": deployments})
         elif self.method == 'POST':
             name = self._get_param("stageName")
-            deployment = self.backend.create_deployment(function_id, name)
+            description = self._get_param("description","")
+            deployment = self.backend.create_deployment(function_id, name,description)
             return 200, headers, json.dumps(deployment)
 
     def individual_deployment(self, request, full_url, headers):

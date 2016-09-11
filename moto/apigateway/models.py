@@ -12,10 +12,12 @@ STAGE_URL = "https://{api_id}.execute-api.{region_name}.amazonaws.com/{stage_nam
 
 
 class Deployment(dict):
-    def __init__(self, deployment_id, name):
+    def __init__(self, deployment_id, name, description=""):
         super(Deployment, self).__init__()
         self['id'] = deployment_id
         self['stageName'] = name
+        self['description'] = description
+        self['createdDate'] = datetime.datetime.now()
 
 
 class IntegrationResponse(dict):
@@ -219,9 +221,9 @@ class RestAPI(object):
         for method in httpretty.httpretty.METHODS:
             httpretty.register_uri(method, stage_url, body=self.resource_callback)
 
-    def create_deployment(self, name):
+    def create_deployment(self, name, description=""):
         deployment_id = create_id()
-        deployment = Deployment(deployment_id, name)
+        deployment = Deployment(deployment_id, name, description)
         self.deployments[deployment_id] = deployment
         self.stages[name] = Stage(name=name, deployment_id=deployment_id)
 

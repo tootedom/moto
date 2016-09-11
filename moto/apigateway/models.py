@@ -231,6 +231,12 @@ class RestAPI(object):
         for method in httpretty.httpretty.METHODS:
             httpretty.register_uri(method, stage_url, body=self.resource_callback)
 
+    def create_stage(self, name, deployment_id):
+        stage = Stage(name=name, deployment_id=deployment_id)
+        self.stages[name] = stage
+        self.update_integration_mocks(name)
+        return stage
+
     def create_deployment(self, name, description=""):
         deployment_id = create_id()
         deployment = Deployment(deployment_id, name, description)
@@ -312,6 +318,11 @@ class APIGatewayBackend(BaseBackend):
 
     def get_stage(self, function_id, stage_name):
         api = self.get_rest_api(function_id)
+        return api.stages.get(stage_name)
+
+    def create_stage(self, function_id, stage_name, deploymentId):
+        api = self.get_rest_api(function_id)
+        api.create_deployment
         return api.stages.get(stage_name)
 
     def update_stage(self, function_id, stage_name, patch_operations):

@@ -112,6 +112,9 @@ class APIGatewayResponse(BaseResponse):
 
         if self.method == 'GET':
             stage_response = self.backend.get_stage(function_id, stage_name)
+        elif self.method == 'PUT':
+            deployment_id = self._get_param("deploymentId")
+            stage_response = self.backend.create_stage(function_id, stage_name, deployment_id)
         elif self.method == 'PATCH':
             path_operations = self._get_param('patchOperations')
             stage_response = self.backend.update_stage(function_id, stage_name, path_operations)
@@ -171,7 +174,7 @@ class APIGatewayResponse(BaseResponse):
         elif self.method == 'POST':
             name = self._get_param("stageName")
             description = self._get_param_with_default_value("description","")
-            deployment = self.backend.create_deployment(function_id, name,description)
+            deployment = self.backend.create_deployment(function_id, name, description)
             return 200, headers, json.dumps(deployment)
 
     def individual_deployment(self, request, full_url, headers):

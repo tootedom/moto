@@ -112,7 +112,7 @@ class APIGatewayResponse(BaseResponse):
 
         if self.method == 'GET':
             stage_response = self.backend.get_stage(function_id, stage_name)
-        elif self.method == 'PUT':
+        elif self.method == 'POST':
             deployment_id = self._get_param("deploymentId")
             stage_response = self.backend.create_stage(function_id, stage_name, deployment_id)
         elif self.method == 'PATCH':

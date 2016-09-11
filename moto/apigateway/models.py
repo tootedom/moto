@@ -17,7 +17,17 @@ class Deployment(dict):
         self['id'] = deployment_id
         self['stageName'] = name
         self['description'] = description
-        self['createdDate'] = datetime.datetime.now()
+        self['createdDate'] = iso_8601_datetime_with_milliseconds(datetime.datetime.now())
+
+    # def to_dict(self):
+    #     return {
+    #         "id": self['id'],
+    #         "stageName": self['stageName'],
+    #         "description": self['description'],
+    #         "createdDate": iso_8601_datetime_with_milliseconds(self['createdDate'])
+    #     }
+
+
 
 
 class IntegrationResponse(dict):

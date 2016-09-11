@@ -165,6 +165,9 @@ class APIGatewayResponse(BaseResponse):
         if self.method == 'GET':
             deployments = self.backend.get_deployments(function_id)
             return 200, headers, json.dumps({"items": deployments})
+            # return 200, headers, json.dumps({"items": [
+            #     deployment.to_dict() for deployment in deployments
+            # ]})
         elif self.method == 'POST':
             name = self._get_param("stageName")
             description = self._get_param_with_default_value("description","")

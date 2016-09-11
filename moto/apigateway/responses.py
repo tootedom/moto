@@ -12,7 +12,7 @@ class APIGatewayResponse(BaseResponse):
         return json.loads(self.body.decode("ascii")).get(key)
 
 
-    def _get_param(self, key, default):
+    def _get_param_with_default_value(self, key, default):
         jsonbody = json.loads(self.body.decode("ascii"))
 
         if key in jsonbody:
@@ -167,7 +167,7 @@ class APIGatewayResponse(BaseResponse):
             return 200, headers, json.dumps({"items": deployments})
         elif self.method == 'POST':
             name = self._get_param("stageName")
-            description = self._get_param("description","")
+            description = self._get_param_with_default_value("description","")
             deployment = self.backend.create_deployment(function_id, name,description)
             return 200, headers, json.dumps(deployment)
 

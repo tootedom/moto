@@ -322,7 +322,7 @@ class APIGatewayBackend(BaseBackend):
 
     def create_stage(self, function_id, stage_name, deploymentId):
         api = self.get_rest_api(function_id)
-        api.create_deployment
+        api.create_stage(stage_name,deploymentId)
         return api.stages.get(stage_name)
 
     def update_stage(self, function_id, stage_name, patch_operations):

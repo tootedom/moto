@@ -356,9 +356,9 @@ class APIGatewayBackend(BaseBackend):
         integration_response = integration.delete_integration_response(status_code)
         return integration_response
 
-    def create_deployment(self, function_id, name):
+    def create_deployment(self, function_id, name, description =""):
         api = self.get_rest_api(function_id)
-        deployment = api.create_deployment(name)
+        deployment = api.create_deployment(name, description)
         return deployment
 
     def get_deployment(self, function_id, deployment_id):

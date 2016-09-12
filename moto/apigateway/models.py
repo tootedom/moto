@@ -177,7 +177,7 @@ class Stage(dict):
     def apply_operations(self, patch_operations):
         for op in patch_operations:
             if 'variables/' in op['path']:
-                self._apply_operation_to_variable(op)
+                self._apply_operation_to_variables(op)
             elif '/cacheClusterEnabled' in op['path']:
                 self['cacheClusterEnabled'] = op['value']
             elif '/cacheClusterSize' in op['path']:

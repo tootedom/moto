@@ -192,7 +192,7 @@ class Stage(dict):
                 split_path = op['path'].split('/',3)
                 if len(split_path)!=4:
                     continue
-                self._patch_method_setting('/'.join(split_path[1:3],split_path[3]),op['value'])
+                self._patch_method_setting('/'.join(split_path[1:3]),split_path[3],op['value'])
             else:
                 raise Exception('Patch operation "%s" not implemented' % op['op'])
         return self

@@ -323,6 +323,11 @@ class APIGatewayBackend(BaseBackend):
         api = self.get_rest_api(function_id)
         return api.stages.get(stage_name)
 
+    def get_stages(self, function_id):
+        api = self.get_rest_api(function_id)
+        return api.get_stages()
+
+
     def create_stage(self, function_id, stage_name, deploymentId):
         api = self.get_rest_api(function_id)
         api.create_stage(stage_name,deploymentId)

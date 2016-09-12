@@ -511,12 +511,17 @@ def test_create_stage():
         restApiId=api_id,
     )
 
+    response['ResponseMetadata'].pop('HTTPHeaders', None) # this is hard to match against, so remove it
+
     response['items'][0].pop('createdDate')
     response['items'][1].pop('createdDate')
-    response['items'].should.equal([
-        {'id':deployment_id2,'description':''},
-        {'id': deployment_id, 'description': ''}
-    ])
+    response.should.equal({
+        'items': [
+            {'id':deployment_id2,'description':''},
+            {'id': deployment_id, 'description': ''}
+        ],
+        'ResponseMetadata': {'HTTPStatusCode': 200}
+    })
 
     new_stage_name = 'current'
     response = client.create_stage(restApiId=api_id,stageName=new_stage_name,deploymentId=deployment_id2)

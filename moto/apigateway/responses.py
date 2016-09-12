@@ -104,7 +104,7 @@ class APIGatewayResponse(BaseResponse):
             method_response = self.backend.delete_method_response(function_id, resource_id, method_type, response_code)
         return 200, headers, json.dumps(method_response)
 
-    def stages_create(self, request, full_url, headers):
+    def restapis_stages(self, request, full_url, headers):
         self.setup_class(request, full_url, headers)
         url_path_parts = self.path.split("/")
         function_id = url_path_parts[2]
@@ -113,6 +113,9 @@ class APIGatewayResponse(BaseResponse):
             stage_name = self._get_param("stageName")
             deployment_id = self._get_param("deploymentId")
             stage_response = self.backend.create_stage(function_id, stage_name, deployment_id)
+        elif self.method == 'GET':
+            stages = self.backend.get_stages(function_id)
+            return 200, headers, json.dumps({"item": stages})
 
         return 200, headers, json.dumps(stage_response)
 

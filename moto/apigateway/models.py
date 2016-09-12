@@ -250,6 +250,9 @@ class RestAPI(object):
     def get_deployment(self, deployment_id):
         return self.deployments[deployment_id]
 
+    def get_stages(self):
+            return list(self.stages.values())
+
     def get_deployments(self):
         return list(self.deployments.values())
 

@@ -202,7 +202,7 @@ class Stage(dict):
         if updated_key is not None:
             if resource_path_and_method not in self['methodSettings']:
                 self['methodSettings'][resource_path_and_method] = self._get_default_method_settings()
-            self['methodSettings'][resource_path_and_method][updated_key] = value
+            self['methodSettings'][resource_path_and_method][updated_key] = self._convert_to_type(updated_key,value)
 
 
     def _get_default_method_settings(self):
@@ -236,6 +236,39 @@ class Stage(dict):
             return mappings[key]
         else:
             None
+
+    def _str2bool(self,v):
+        return v.lower() == "true"
+
+    def _convert_to_type(self,key,val):
+        type_mappings = {
+            'metricsEnabled' : 'bool',
+            'loggingLevel' : 'str',
+            'dataTraceEnabled' : 'bool',
+            'throttlingBurstLimit' :  'int',
+            'throttlingRateLimit' : 'float',
+            'cachingEnabled' : 'bool',
+            'cacheTtlInSeconds' :  'int',
+            'cacheDataEncrypted' :  'bool',
+            'requireAuthorizationForCacheControl' :'bool',
+            'unauthorizedCacheControlHeaderStrategy' : 'str'
+        }
+
+        if key in type_mappings:
+            type_value = type_mappings[key]
+
+            if type_value == 'bool':
+                return self._str2bool(val)
+            elif type_value == 'int':
+                return  int(val)
+            elif type_value == 'float':
+                return float(val)
+            else:
+                return str(val)
+        else:
+            return str(val)
+
+
 
     def _apply_operation_to_variables(self,op):
         key = op['path'][op['path'].rindex("variables/")+10:]

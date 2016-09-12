@@ -470,6 +470,76 @@ def test_integration_response():
     response['methodIntegration']['integrationResponses'].should.equal({})
 
 
+
+@mock_apigateway
+def test_create_stage():
+    client = boto3.client('apigateway', region_name='us-west-2')
+    stage_name = 'staging'
+    response = client.create_rest_api(
+        name='my_api',
+        description='this is my api',
+    )
+    api_id = response['id']
+
+    response = client.create_deployment(
+        restApiId=api_id,
+        stageName=stage_name,
+    )
+    deployment_id = response['id']
+
+    response = client.get_deployment(
+        restApiId=api_id,
+        deploymentId=deployment_id,
+    )
+    response.pop('createdDate',None) # createdDate is hard to match against, remove it
+    response['ResponseMetadata'].pop('HTTPHeaders', None) # this is hard to match against, so remove it
+    response.should.equal({
+        'id': deployment_id,
+        'ResponseMetadata': {'HTTPStatusCode': 200},
+        'description' : ''
+    })
+
+    response = client.create_deployment(
+        restApiId=api_id,
+        stageName=stage_name,
+    )
+
+    deployment_id2 = response['id']
+
+
+    response = client.get_deployments(
+        restApiId=api_id,
+    )
+
+    response['items'][0].pop('createdDate')
+    response['items'][1].pop('createdDate')
+    response['items'].should.equal([
+        {'id':deployment_id2,'description':''},
+        {'id': deployment_id, 'description': ''}
+    ])
+
+    new_stage_name = 'current'
+    response = client.create_stage(restApiId=api_id,stageName=new_stage_name,deploymentId=deployment_id2)
+
+    response['ResponseMetadata'].pop('HTTPHeaders', None) # this is hard to match against, so remove it
+
+    response.should.equal({
+        'stageName':new_stage_name,
+        'deploymentId':deployment_id2,
+        'methodSettings':{},
+        'variables':{},
+        'ResponseMetadata': {'HTTPStatusCode': 200},
+        'description':''
+    })
+
+    stage = client.get_stage(
+        restApiId=api_id,
+        stageName=new_stage_name
+    )
+    stage['stageName'].should.equal(new_stage_name)
+    stage['deploymentId'].should.equal(deployment_id2)
+
+
 @mock_apigateway
 def test_deployment():
     client = boto3.client('apigateway', region_name='us-west-2')

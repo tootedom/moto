@@ -515,13 +515,9 @@ def test_create_stage():
 
     response['items'][0].pop('createdDate')
     response['items'][1].pop('createdDate')
-    response.should.equal({
-        'items': [
-            {'id':deployment_id2,'description':''},
-            {'id': deployment_id, 'description': ''}
-        ],
-        'ResponseMetadata': {'HTTPStatusCode': 200}
-    })
+    response['items'][0]['id'].should.match(r"{0}|{1}".format(deployment_id2,deployment_id))
+    response['items'][1]['id'].should.match(r"{0}|{1}".format(deployment_id2,deployment_id))
+
 
     new_stage_name = 'current'
     response = client.create_stage(restApiId=api_id,stageName=new_stage_name,deploymentId=deployment_id2)
@@ -534,7 +530,9 @@ def test_create_stage():
         'methodSettings':{},
         'variables':{},
         'ResponseMetadata': {'HTTPStatusCode': 200},
-        'description':''
+        'description':'',
+        'cacheClusterSize':0.5,
+        'cacheClusterEnabled':False
     })
 
     stage = client.get_stage(
@@ -607,7 +605,7 @@ def test_deployment():
         patchOperations=[
             {
                 'op': 'replace',
-                'path': 'description',
+                'path': '/description',
                 'value': '_new_description_'
             },
         ]

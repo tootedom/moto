@@ -162,6 +162,8 @@ class Resource(object):
 
 
 class Stage(dict):
+
+
     def __init__(self, name=None, deployment_id=None):
         super(Stage, self).__init__()
         self['stageName'] = name
@@ -169,19 +171,81 @@ class Stage(dict):
         self['methodSettings'] = {}
         self['variables'] = {}
         self['description'] = ''
+        self['cacheClusterEnabled'] = False
+        self['cacheClusterSize'] = 0.5
 
     def apply_operations(self, patch_operations):
         for op in patch_operations:
-            if op['op'] == 'replace':
-                # TODO: match the path against the values hash
+            if 'variables/' in op['path']:
+                self._apply_operation_to_variable(op)
+            elif '/cacheClusterEnabled' in op['path']:
+                self['cacheClusterEnabled'] = op['value']
+            elif '/cacheClusterSize' in op['path']:
+                self['cacheClusterSize'] = op['value']
+            elif '/description' in op['path']:
+                self['description'] = op['value']
+            elif '/deploymentId' in op['path']:
+                self['deploymentId'] = op['value']
+            elif op['op'] == 'replace':
+                # Method Settings drop into here
                 # (e.g., path could be '/*/*/logging/loglevel')
-                key = op['path']
-                if op['path'].startswith("/"):
-                    key = op['path'][1:]
-                self[key] = op['value']
+                split_path = op['path'].split('/',3)
+                if len(split_path)!=4:
+                    continue
+                self._patch_method_setting('/'.join(split_path[1:3],split_path[3]),op['value'])
             else:
                 raise Exception('Patch operation "%s" not implemented' % op['op'])
         return self
+
+    def _patch_method_setting(self,resource_path_and_method,key,value):
+        updated_key = self._method_settings_translations(key)
+        if updated_key is not None:
+            if resource_path_and_method not in self['methodSettings']:
+                self['methodSettings'][resource_path_and_method] = self._get_default_method_settings()
+            self['methodSettings'][resource_path_and_method][updated_key] = value
+
+
+    def _get_default_method_settings(self):
+        return {
+            "throttlingRateLimit": 1000.0,
+            "dataTraceEnabled": False,
+            "metricsEnabled": False,
+            "unauthorizedCacheControlHeaderStrategy": "SUCCEED_WITH_RESPONSE_HEADER",
+            "cacheTtlInSeconds": 300,
+            "cacheDataEncrypted": True,
+            "cachingEnabled": False,
+            "throttlingBurstLimit": 2000,
+            "requireAuthorizationForCacheControl": True
+        }
+
+    def _method_settings_mappings(self,key):
+        mappings = {
+            'metrics/enabled' :'metricsEnabled',
+            'logging/loglevel' : 'loggingLevel',
+            'logging/dataTrace' : 'dataTraceEnabled' ,
+            'throttling/burstLimit' : 'throttlingBurstLimit',
+            'throttling/rateLimit' : 'throttlingRateLimit',
+            'caching/enabled' : 'cachingEnabled',
+            'caching/ttlInSeconds' : 'cacheTtlInSeconds',
+            'caching/dataEncrypted' : 'cacheDataEncrypted',
+            'caching/requireAuthorizationForCacheControl' : 'requireAuthorizationForCacheControl',
+            'caching/unauthorizedCacheControlHeaderStrategy' : 'unauthorizedCacheControlHeaderStrategy'
+        }
+
+        if key in mappings:
+            return mappings[key]
+        else:
+            None
+
+    def _apply_operation_to_variables(self,op):
+        key = op['path'][op['path'].rindex("variables/")+10:]
+        if op['op'] == 'remove':
+            self['variables'].pop(key, None)
+        elif op['op'] == 'replace':
+            self['variables'][key] = op['value']
+        else:
+            raise Exception('Patch operation "%s" not implemented' % op['op'])
+
 
 
 class RestAPI(object):

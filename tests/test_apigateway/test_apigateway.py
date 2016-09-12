@@ -360,6 +360,7 @@ def test_integrations():
         uri=test_uri,
         requestTemplates=templates
     )
+    response['ResponseMetadata'].pop('HTTPHeaders', None) # this is hard to match against, so remove it
     response['ResponseMetadata'].should.equal({'HTTPStatusCode': 200})
 
     response = client.get_integration(
@@ -489,17 +490,21 @@ def test_deployment():
         restApiId=api_id,
         deploymentId=deployment_id,
     )
+    response.pop('createdDate',None) # createdDate is hard to match against, remove it
     response['ResponseMetadata'].pop('HTTPHeaders', None) # this is hard to match against, so remove it
     response.should.equal({
         'id': deployment_id,
-        'ResponseMetadata': {'HTTPStatusCode': 200}
+        'ResponseMetadata': {'HTTPStatusCode': 200},
+        'description' : ''
     })
 
     response = client.get_deployments(
         restApiId=api_id,
     )
+
+    response['items'][0].pop('createdDate')
     response['items'].should.equal([
-        {'id': deployment_id}
+        {'id': deployment_id, 'description': ''}
     ])
 
     response = client.delete_deployment(

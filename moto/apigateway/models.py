@@ -218,7 +218,7 @@ class Stage(dict):
             "requireAuthorizationForCacheControl": True
         }
 
-    def _method_settings_mappings(self,key):
+    def _method_settings_translations(self,key):
         mappings = {
             'metrics/enabled' :'metricsEnabled',
             'logging/loglevel' : 'loggingLevel',

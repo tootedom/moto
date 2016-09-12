@@ -179,9 +179,9 @@ class Stage(dict):
             if 'variables/' in op['path']:
                 self._apply_operation_to_variables(op)
             elif '/cacheClusterEnabled' in op['path']:
-                self['cacheClusterEnabled'] = op['value']
+                self['cacheClusterEnabled'] = self._str2bool(op['value'])
             elif '/cacheClusterSize' in op['path']:
-                self['cacheClusterSize'] = op['value']
+                self['cacheClusterSize'] = float(op['value'])
             elif '/description' in op['path']:
                 self['description'] = op['value']
             elif '/deploymentId' in op['path']:

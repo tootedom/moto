@@ -128,8 +128,8 @@ class APIGatewayResponse(BaseResponse):
         if self.method == 'GET':
             stage_response = self.backend.get_stage(function_id, stage_name)
         elif self.method == 'PATCH':
-            path_operations = self._get_param('patchOperations')
-            stage_response = self.backend.update_stage(function_id, stage_name, path_operations)
+            patch_operations = self._get_param('patchOperations')
+            stage_response = self.backend.update_stage(function_id, stage_name, patch_operations)
         return 200, headers, json.dumps(stage_response)
 
     def integrations(self, request, full_url, headers):

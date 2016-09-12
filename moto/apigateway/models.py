@@ -175,7 +175,10 @@ class Stage(dict):
             if op['op'] == 'replace':
                 # TODO: match the path against the values hash
                 # (e.g., path could be '/*/*/logging/loglevel')
-                self[op['path']] = op['value']
+                key = op['path']
+                if op['path'].startswith("/"):
+                    key = op['path'][1:]
+                self[key] = op['value']
             else:
                 raise Exception('Patch operation "%s" not implemented' % op['op'])
         return self

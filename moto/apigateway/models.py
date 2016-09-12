@@ -326,8 +326,6 @@ class APIGatewayBackend(BaseBackend):
         return api.stages.get(stage_name)
 
     def update_stage(self, function_id, stage_name, patch_operations):
-        print stage_name
-        print patch_operations
         stage = self.get_stage(function_id, stage_name)
         if not stage:
             api = self.get_rest_api(function_id)

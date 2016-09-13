@@ -4,6 +4,7 @@ import json
 
 from moto.core.responses import BaseResponse
 from .models import apigateway_backends
+from .exceptions import StageNonFoundException
 
 
 class APIGatewayResponse(BaseResponse):
@@ -126,7 +127,10 @@ class APIGatewayResponse(BaseResponse):
         stage_name = url_path_parts[4]
 
         if self.method == 'GET':
-            stage_response = self.backend.get_stage(function_id, stage_name)
+            try:
+                stage_response = self.backend.get_stage(function_id, stage_name)
+            except StageNonFoundException as error:
+                 return error.code, headers, error.description
         elif self.method == 'PATCH':
             patch_operations = self._get_param('patchOperations')
             stage_response = self.backend.update_stage(function_id, stage_name, patch_operations)

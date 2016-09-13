@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+
 from datetime import datetime
 from dateutil.tz import tzutc
 import boto3
@@ -7,6 +8,7 @@ from freezegun import freeze_time
 import httpretty
 import requests
 import sure  # noqa
+from botocore.exceptions import ClientError
 
 from moto import mock_apigateway
 
@@ -585,6 +587,26 @@ def test_update_stage_configuration():
         assert False.should.be.ok #Fail, should not be here
     except Exception:
         assert True.should.be.ok
+
+@mock_apigateway
+def test_non_existent_stage():
+    client = boto3.client('apigateway', region_name='us-west-2')
+    response = client.create_rest_api(
+        name='my_api',
+        description='this is my api',
+    )
+    api_id = response['id']
+
+
+    client.get_stage.when.called_with(restApiId=api_id,stageName='xxx').should.throw(ClientError)
+
+    # try:
+    #     client.get_stage(
+    #         restApiId=api_id,
+    #         stageName="xxx"
+    #     )
+    # except ClientError, e:
+    #     print e
 
 
 @mock_apigateway

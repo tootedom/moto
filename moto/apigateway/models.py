@@ -7,6 +7,7 @@ import requests
 from moto.core import BaseBackend
 from moto.core.utils import iso_8601_datetime_with_milliseconds
 from .utils import create_id
+from .exceptions import StageNonFoundError
 
 STAGE_URL = "https://{api_id}.execute-api.{region_name}.amazonaws.com/{stage_name}"
 
@@ -420,7 +421,12 @@ class APIGatewayBackend(BaseBackend):
 
     def get_stage(self, function_id, stage_name):
         api = self.get_rest_api(function_id)
-        return api.stages.get(stage_name)
+        stage = api.stages.get(stage_name)
+        if stage is None:
+            raise StageNonFoundError(stage_name=stage_name)
+        else:
+            return stage
+
 
     def get_stages(self, function_id):
         api = self.get_rest_api(function_id)

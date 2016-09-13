@@ -666,12 +666,40 @@ def test_create_stage():
         'cacheClusterEnabled':False
     })
 
+    new_stage_name_with_vars = 'stage_with_vars'
+    response = client.create_stage(restApiId=api_id,stageName=new_stage_name_with_vars,deploymentId=deployment_id2,variables={
+        "env" : "dev"
+    })
+
+    response['ResponseMetadata'].pop('HTTPHeaders', None) # this is hard to match against, so remove it
+
+    response.should.equal({
+        'stageName':new_stage_name_with_vars,
+        'deploymentId':deployment_id2,
+        'methodSettings':{},
+        'variables':{ "env" : "dev" },
+        'ResponseMetadata': {'HTTPStatusCode': 200},
+        'description':'',
+        'cacheClusterSize':0.5,
+        'cacheClusterEnabled':False
+    })
+
     stage = client.get_stage(
         restApiId=api_id,
         stageName=new_stage_name
     )
     stage['stageName'].should.equal(new_stage_name)
     stage['deploymentId'].should.equal(deployment_id2)
+
+    stage = client.get_stage(
+        restApiId=api_id,
+        stageName=new_stage_name_with_vars
+    )
+    stage['stageName'].should.equal(new_stage_name_with_vars)
+    stage['deploymentId'].should.equal(deployment_id2)
+    stage['variables'].should.have.key('env').which.should.match("dev")
+
+
 
 
 @mock_apigateway

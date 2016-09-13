@@ -8,13 +8,22 @@ class ClientError(RESTError):
         super(ClientError, self).__init__(*args, **kwargs)
 
 
-class StageNonFoundError(ClientError):
+# class StageNonFoundError(ClientError):
+#     code = 404
+#
+#     def __init__(self, stage_name):
+#         super(StageNonFoundError, self).__init__(
+#             "NonFoundException",
+#             "Invalid stage identifier specified",
+#             stage=stage_name,
+#         )
+
+class StageNonFoundError(RESTError):
     code = 404
 
-    def __init__(self, stage_name):
+    def __init__(self, code="NonFoundException", message="Invalid stage identifier specified"):
         super(StageNonFoundError, self).__init__(
-            "NonFoundException",
-            "Invalid stage identifier specified",
-            stage=stage_name,
-        )
+            code, message)
+
+
 

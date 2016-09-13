@@ -423,7 +423,7 @@ class APIGatewayBackend(BaseBackend):
         api = self.get_rest_api(function_id)
         stage = api.stages.get(stage_name)
         if stage is None:
-            raise StageNonFoundError(stage_name=stage_name)
+            raise StageNonFoundError()
         else:
             return stage
 

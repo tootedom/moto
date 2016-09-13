@@ -600,13 +600,6 @@ def test_non_existent_stage():
 
     client.get_stage.when.called_with(restApiId=api_id,stageName='xxx').should.throw(ClientError)
 
-    # try:
-    #     client.get_stage(
-    #         restApiId=api_id,
-    #         stageName="xxx"
-    #     )
-    # except ClientError, e:
-    #     print e
 
 
 @mock_apigateway

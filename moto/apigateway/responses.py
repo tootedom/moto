@@ -130,7 +130,7 @@ class APIGatewayResponse(BaseResponse):
             try:
                 stage_response = self.backend.get_stage(function_id, stage_name)
             except StageNonFoundException as error:
-                return error.code, headers,'{{"message":"{0}"}}'.format(error.message)
+                return error.code, headers,'{{"message":"{0}","code":"{1}"}}'.format(error.message,error.error_type)
         elif self.method == 'PATCH':
             patch_operations = self._get_param('patchOperations')
             stage_response = self.backend.update_stage(function_id, stage_name, patch_operations)

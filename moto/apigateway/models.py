@@ -7,7 +7,7 @@ import requests
 from moto.core import BaseBackend
 from moto.core.utils import iso_8601_datetime_with_milliseconds
 from .utils import create_id
-from .exceptions import StageNonFoundError
+from .exceptions import StageNonFoundException
 
 STAGE_URL = "https://{api_id}.execute-api.{region_name}.amazonaws.com/{stage_name}"
 

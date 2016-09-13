@@ -164,12 +164,12 @@ class Resource(object):
 class Stage(dict):
 
 
-    def __init__(self, name=None, deployment_id=None):
+    def __init__(self, name=None, deployment_id=None, variables={}):
         super(Stage, self).__init__()
         self['stageName'] = name
         self['deploymentId'] = deployment_id
         self['methodSettings'] = {}
-        self['variables'] = {}
+        self['variables'] = variables
         self['description'] = ''
         self['cacheClusterEnabled'] = False
         self['cacheClusterSize'] = 0.5
@@ -337,12 +337,11 @@ class RestAPI(object):
         self.update_integration_mocks(name)
         return stage
 
-    def create_deployment(self, name, description=""):
+    def create_deployment(self, name, description="",stage_variables={}):
         deployment_id = create_id()
         deployment = Deployment(deployment_id, name, description)
         self.deployments[deployment_id] = deployment
-        self.stages[name] = Stage(name=name, deployment_id=deployment_id)
-
+        self.stages[name] = Stage(name=name, deployment_id=deployment_id,variables=stage_variables)
         self.update_integration_mocks(name)
 
         return deployment
@@ -485,9 +484,9 @@ class APIGatewayBackend(BaseBackend):
         integration_response = integration.delete_integration_response(status_code)
         return integration_response
 
-    def create_deployment(self, function_id, name, description =""):
+    def create_deployment(self, function_id, name, description ="", stage_variables={}):
         api = self.get_rest_api(function_id)
-        deployment = api.create_deployment(name, description)
+        deployment = api.create_deployment(name, description,stage_variables)
         return deployment
 
     def get_deployment(self, function_id, deployment_id):

@@ -587,11 +587,6 @@ def test_update_stage_configuration():
         assert True.should.be.ok
 
 
-
-
-    print stage
-
-
 @mock_apigateway
 def test_create_stage():
     client = boto3.client('apigateway', region_name='us-west-2')

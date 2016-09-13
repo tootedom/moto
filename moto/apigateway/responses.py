@@ -186,7 +186,8 @@ class APIGatewayResponse(BaseResponse):
         elif self.method == 'POST':
             name = self._get_param("stageName")
             description = self._get_param_with_default_value("description","")
-            deployment = self.backend.create_deployment(function_id, name, description)
+            stage_variables = self._get_param_with_default_value('variables',{})
+            deployment = self.backend.create_deployment(function_id, name, description,stage_variables)
             return 200, headers, json.dumps(deployment)
 
     def individual_deployment(self, request, full_url, headers):

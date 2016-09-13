@@ -113,7 +113,9 @@ class APIGatewayResponse(BaseResponse):
         if self.method == 'POST':
             stage_name = self._get_param("stageName")
             deployment_id = self._get_param("deploymentId")
-            stage_response = self.backend.create_stage(function_id, stage_name, deployment_id)
+            stage_variables = self._get_param_with_default_value('variables',{})
+
+            stage_response = self.backend.create_stage(function_id, stage_name, deployment_id,variables=stage_variables)
         elif self.method == 'GET':
             stages = self.backend.get_stages(function_id)
             return 200, headers, json.dumps({"item": stages})
